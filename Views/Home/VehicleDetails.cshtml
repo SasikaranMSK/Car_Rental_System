@@ -1,0 +1,193 @@
+@model CarRentalSystemSeparation.Areas.Vehicle.DTOs.VehicleDTO
+@{
+    ViewData["Title"] = Model.DisplayName;
+    Layout = "_Layout";
+}
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Vehicles">Vehicles</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.DisplayName</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.DisplayName" style="height: 400px; object-fit: cover;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="card-title h2 mb-2">@Model.DisplayName</h1>
+                            <div class="mb-2">
+                                <span class="badge bg-primary fs-6 me-2">
+                                    <i class="bi bi-tag me-1"></i>@Model.Type
+                                </span>
+                                <span class="badge bg-@(Model.Status == CarRentalSystemSeparation.Common.Enums.VehicleStatus.Available ? "success" : "warning") fs-6">
+                                    <i class="bi bi-circle-fill me-1"></i>@Model.Status
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="h2 text-primary fw-bold mb-1">$@Model.PricePerDay</div>
+                            <small class="text-muted">per day</small>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Description</h5>
+                    <p class="text-muted mb-4">@Model.Description</p>
+
+                    <h5 class="mb-3">Features & Amenities</h5>
+                    <div class="row">
+                        @foreach (var feature in Model.Features.Split(',').Select(f => f.Trim()))
+                        {
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    <span>@feature</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Book This Vehicle</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Status == CarRentalSystemSeparation.Common.Enums.VehicleStatus.Available)
+                    {
+                        <form>
+                            <div class="mb-3">
+                                <label for="pickupDate" class="form-label">Pickup Date</label>
+                                <input type="date" class="form-control" id="pickupDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="returnDate" class="form-label">Return Date</label>
+                                <input type="date" class="form-control" id="returnDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pickupTime" class="form-label">Pickup Time</label>
+                                <select class="form-select" id="pickupTime" required>
+                                    <option value="">Select time</option>
+                                    <option value="09:00">9:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="12:00">12:00 PM</option>
+                                    <option value="13:00">1:00 PM</option>
+                                    <option value="14:00">2:00 PM</option>
+                                    <option value="15:00">3:00 PM</option>
+                                    <option value="16:00">4:00 PM</option>
+                                    <option value="17:00">5:00 PM</option>
+                                </select>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Daily Rate:</span>
+                                <span class="fw-bold">$@Model.PricePerDay</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Estimated Days:</span>
+                                <span class="fw-bold" id="estimatedDays">1</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Subtotal:</span>
+                                <span class="fw-bold" id="subtotal">$@Model.PricePerDay</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="h6">Total:</span>
+                                <span class="h6 text-primary fw-bold" id="totalPrice">$@Model.PricePerDay</span>
+                            </div>
+                            <div class="d-grid">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="alert('Please register or login to book a vehicle')">
+                                    <i class="bi bi-calendar-check me-2"></i>Book Now
+                                </button>
+                            </div>
+                            <div class="text-center mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-shield-check me-1"></i>Secure booking • No hidden fees
+                                </small>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                            <h6 class="mt-3">Vehicle Unavailable</h6>
+                            <p class="text-muted mb-3">This vehicle is currently not available for booking.</p>
+                            <a class="btn btn-outline-primary" asp-controller="Home" asp-action="Vehicles">
+                                <i class="bi bi-car-front me-2"></i>Browse Other Vehicles
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Contact Card -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-body text-center">
+                    <i class="bi bi-headset text-primary" style="font-size: 2.5rem;"></i>
+                    <h6 class="mt-3">Need Help?</h6>
+                    <p class="text-muted small mb-3">Our customer service team is here to assist you.</p>
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-telephone me-1"></i>Call (555) 123-4567
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Vehicles -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">Similar Vehicles</h3>
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-car-front" style="font-size: 3rem;"></i>
+                <p class="mt-3">Similar vehicles will be shown here</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pickupDate = document.getElementById('pickupDate');
+        const returnDate = document.getElementById('returnDate');
+        const estimatedDaysElement = document.getElementById('estimatedDays');
+        const subtotalElement = document.getElementById('subtotal');
+        const totalPriceElement = document.getElementById('totalPrice');
+        const dailyRate = @Model.PricePerDay;
+
+        function calculateTotal() {
+            if (pickupDate.value && returnDate.value) {
+                const pickup = new Date(pickupDate.value);
+                const returnD = new Date(returnDate.value);
+                const diffTime = Math.abs(returnD - pickup);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays > 0) {
+                    estimatedDaysElement.textContent = diffDays;
+                    const subtotal = dailyRate * diffDays;
+                    subtotalElement.textContent = '$' + subtotal.toFixed(2);
+                    totalPriceElement.textContent = '$' + subtotal.toFixed(2);
+                }
+            }
+        }
+
+        pickupDate.addEventListener('change', calculateTotal);
+        returnDate.addEventListener('change', calculateTotal);
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        pickupDate.setAttribute('min', today);
+        returnDate.setAttribute('min', today);
+    });
+</script>

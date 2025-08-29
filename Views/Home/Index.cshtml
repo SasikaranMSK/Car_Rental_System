@@ -1,0 +1,148 @@
+@model IEnumerable<CarRentalSystemSeparation.Areas.Vehicle.DTOs.VehicleListDTO>
+@{
+    ViewData["Title"] = "Home";
+    var banners = ViewBag.Banners as IEnumerable<CarRentalSystemSeparation.Areas.Vehicle.DTOs.BannerDTO>;
+    var featuredVehicles = ViewBag.FeaturedVehicles as IEnumerable<CarRentalSystemSeparation.Areas.Vehicle.DTOs.VehicleListDTO>;
+    Layout = "_Layout";
+}
+
+<!-- Hero Carousel -->
+<div id="heroCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        @if (banners != null)
+        {
+            @for (int i = 0; i < banners.Count(); i++)
+            {
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="@i" 
+                        class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")"></button>
+            }
+        }
+    </div>
+    <div class="carousel-inner">
+        @if (banners != null)
+        {
+            @foreach (var (banner, index) in banners.Select((b, i) => (b, i)))
+            {
+                <div class="carousel-item @(index == 0 ? "active" : "")">
+                    <img src="@banner.ImageUrl" class="d-block w-100" alt="@banner.Title">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h1 class="display-4 fw-bold">@banner.Title</h1>
+                        <p class="lead">@banner.Subtitle</p>
+                        <a class="btn btn-light btn-lg me-2" asp-controller="Home" asp-action="Vehicles">
+                            <i class="bi bi-car-front me-2"></i>Browse Vehicles
+                        </a>
+                        <a class="btn btn-outline-light btn-lg" asp-controller="Account" asp-action="Register">
+                            <i class="bi bi-person-plus me-2"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<!-- Features Section -->
+<div class="container mb-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-primary mb-3">
+                        <i class="bi bi-shield-check" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">Safe & Secure</h5>
+                    <p class="card-text text-muted">All our vehicles are regularly maintained and thoroughly inspected for your safety and peace of mind.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-primary mb-3">
+                        <i class="bi bi-clock-history" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">24/7 Support</h5>
+                    <p class="card-text text-muted">Our customer support team is available around the clock to assist you with any questions or concerns.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-primary mb-3">
+                        <i class="bi bi-cash-coin" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">Best Prices</h5>
+                    <p class="card-text text-muted">Competitive rates with no hidden fees. Get the best value for your money with our transparent pricing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Vehicles Section -->
+<div class="container mb-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2 class="display-5 fw-bold text-primary mb-3">Featured Vehicles</h2>
+            <p class="lead text-muted">Choose from our premium collection of well-maintained vehicles</p>
+        </div>
+    </div>
+    <div class="row">
+        @if (featuredVehicles != null)
+        {
+            @foreach (var vehicle in featuredVehicles)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card vehicle-card shadow-sm">
+                        <img src="@vehicle.ImageUrl" class="card-img-top" alt="@vehicle.DisplayName">
+                        <div class="card-body">
+                            <h5 class="card-title">@vehicle.DisplayName</h5>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-tag me-1"></i>@vehicle.Type
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge price-badge fs-6">$@vehicle.PricePerDay/day</span>
+                                <a href="@Url.Action("VehicleDetails", "Home", new { id = vehicle.Id })" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="bi bi-eye me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="text-center">
+        <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Vehicles">
+            <i class="bi bi-car-front me-2"></i>View All Vehicles
+        </a>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="hero-section text-white text-center mb-0">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="display-4 fw-bold mb-4">Ready to Start Your Journey?</h2>
+                <p class="lead mb-4">Join thousands of satisfied customers who trust CarRental Pro for their transportation needs.</p>
+                <a class="btn btn-light btn-lg me-3" asp-controller="Account" asp-action="Register">
+                    <i class="bi bi-person-plus me-2"></i>Create Account
+                </a>
+                <a class="btn btn-outline-light btn-lg" asp-controller="Home" asp-action="About">
+                    <i class="bi bi-info-circle me-2"></i>Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
