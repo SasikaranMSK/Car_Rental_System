@@ -1,0 +1,156 @@
+@model CarRentalSystemSeparation.Areas.Customer.ViewModels.BookingViewModel
+@{
+    ViewData["Title"] = "Book Vehicle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" asp-area="">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Vehicles" asp-area="">Vehicles</a></li>
+            <li class="breadcrumb-item active">Book Vehicle</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Book Your Vehicle</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Vehicle Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <img src="@Model.VehicleImageUrl" class="img-fluid rounded" alt="@Model.VehicleName">
+                        </div>
+                        <div class="col-md-8">
+                            <h5>@Model.VehicleName</h5>
+                            <p class="text-muted mb-2">Daily Rate: <span class="fw-bold text-primary">$@Model.PricePerDay</span></p>
+                        </div>
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="VehicleId" />
+                        <input type="hidden" asp-for="VehicleName" />
+                        <input type="hidden" asp-for="PricePerDay" />
+                        <input type="hidden" asp-for="VehicleImageUrl" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="PickupDate" class="form-label"></label>
+                                <input asp-for="PickupDate" class="form-control" type="date" />
+                                <span asp-validation-for="PickupDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ReturnDate" class="form-label"></label>
+                                <input asp-for="ReturnDate" class="form-control" type="date" />
+                                <span asp-validation-for="ReturnDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PickupTime" class="form-label"></label>
+                            <select asp-for="PickupTime" class="form-select">
+                                <option value="">Select pickup time</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                            </select>
+                            <span asp-validation-for="PickupTime" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" 
+                                      placeholder="Any special requests or notes..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Vehicles" asp-area="">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Vehicles
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-calendar-check me-2"></i>Confirm Booking
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0">Booking Summary</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Daily Rate:</span>
+                        <span class="fw-bold">$@Model.PricePerDay</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Estimated Days:</span>
+                        <span class="fw-bold" id="estimatedDays">1</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="h6">Total:</span>
+                        <span class="h6 text-primary fw-bold" id="totalPrice">$@Model.PricePerDay</span>
+                    </div>
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>Final amount will be calculated based on actual rental period
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pickupDate = document.querySelector('input[name="PickupDate"]');
+            const returnDate = document.querySelector('input[name="ReturnDate"]');
+            const estimatedDaysElement = document.getElementById('estimatedDays');
+            const totalPriceElement = document.getElementById('totalPrice');
+            const dailyRate = @Model.PricePerDay;
+
+            function calculateTotal() {
+                if (pickupDate.value && returnDate.value) {
+                    const pickup = new Date(pickupDate.value);
+                    const returnD = new Date(returnDate.value);
+                    const diffTime = Math.abs(returnD - pickup);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    
+                    if (diffDays > 0) {
+                        estimatedDaysElement.textContent = diffDays;
+                        const total = dailyRate * diffDays;
+                        totalPriceElement.textContent = '$' + total.toFixed(2);
+                    }
+                }
+            }
+
+            pickupDate.addEventListener('change', calculateTotal);
+            returnDate.addEventListener('change', calculateTotal);
+
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            pickupDate.setAttribute('min', today);
+            returnDate.setAttribute('min', today);
+
+            // Initial calculation
+            calculateTotal();
+        });
+    </script>
+}

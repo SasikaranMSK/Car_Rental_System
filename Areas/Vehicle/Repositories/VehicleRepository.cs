@@ -7,9 +7,13 @@ namespace CarRentalSystemSeparation.Areas.Vehicle.Repositories
 {
     public interface IVehicleRepository
     {
+        Task<IEnumerable<Models.Vehicle>> GetAllVehiclesAsync();
         Task<IEnumerable<Models.Vehicle>> GetAvailableVehiclesAsync();
         Task<Models.Vehicle?> GetByIdAsync(int id);
         Task<IEnumerable<Models.Vehicle>> GetByTypeAsync(VehicleType type);
+        Task<Models.Vehicle> CreateAsync(Models.Vehicle vehicle);
+        Task<Models.Vehicle> UpdateAsync(Models.Vehicle vehicle);
+        Task<bool> DeleteAsync(int id);
     }
 
     public interface IBannerRepository
@@ -24,6 +28,14 @@ namespace CarRentalSystemSeparation.Areas.Vehicle.Repositories
         public VehicleRepository(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<IEnumerable<Models.Vehicle>> GetAllVehiclesAsync()
+        {
+            return await _context.Vehicles
+                .OrderBy(v => v.Make)
+                .ThenBy(v => v.Model)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Models.Vehicle>> GetAvailableVehiclesAsync()
@@ -45,6 +57,33 @@ namespace CarRentalSystemSeparation.Areas.Vehicle.Repositories
                 .Where(v => v.Type == type && v.Status == VehicleStatus.Available)
                 .OrderBy(v => v.PricePerDay)
                 .ToListAsync();
+        }
+
+        public async Task<Models.Vehicle> CreateAsync(Models.Vehicle vehicle)
+        {
+            vehicle.CreatedAt = DateTime.UtcNow;
+            _context.Vehicles.Add(vehicle);
+            await _context.SaveChangesAsync();
+            return vehicle;
+        }
+
+        public async Task<Models.Vehicle> UpdateAsync(Models.Vehicle vehicle)
+        {
+            vehicle.UpdatedAt = DateTime.UtcNow;
+            _context.Vehicles.Update(vehicle);
+            await _context.SaveChangesAsync();
+            return vehicle;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null)
+                return false;
+
+            _context.Vehicles.Remove(vehicle);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 

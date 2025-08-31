@@ -1,0 +1,157 @@
+@model CarRentalSystemSeparation.Areas.Customer.DTOs.BookingDTO
+@{
+    ViewData["Title"] = "Booking Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" asp-area="">Home</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">My Bookings</a></li>
+            <li class="breadcrumb-item active">Booking #@Model.Id</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Booking #@Model.Id</h4>
+                        <span class="badge bg-@(GetStatusBadgeClass(Model.Status)) fs-6">
+                            @Model.Status
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <img src="@Model.VehicleImageUrl" class="img-fluid rounded" alt="@Model.VehicleName">
+                        </div>
+                        <div class="col-md-8">
+                            <h5>@Model.VehicleName</h5>
+                            <p class="text-muted mb-3">Booked on @Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <h6 class="text-primary">Pickup</h6>
+                                    <p class="mb-1">@Model.PickupDate.ToString("dddd, MMMM dd, yyyy")</p>
+                                    <p class="text-muted">@Model.PickupTime</p>
+                                </div>
+                                <div class="col-6">
+                                    <h6 class="text-primary">Return</h6>
+                                    <p class="mb-1">@Model.ReturnDate.ToString("dddd, MMMM dd, yyyy")</p>
+                                    <p class="text-muted">Same time</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                    {
+                        <div class="mb-4">
+                            <h6 class="text-primary">Additional Notes</h6>
+                            <p class="text-muted">@Model.Notes</p>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Rental Period</h6>
+                            <p>@Model.TotalDays day(s)</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Total Amount</h6>
+                            <p class="h5 text-success fw-bold">$@Model.TotalAmount</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0">Actions</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.Status == CarRentalSystemSeparation.Common.Enums.BookingStatus.Pending)
+                    {
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-danger" onclick="cancelBooking(@Model.Id)">
+                                <i class="bi bi-x-circle me-2"></i>Cancel Booking
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">No actions available for this booking status.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-4">
+                <div class="card-body text-center">
+                    <i class="bi bi-headset text-primary" style="font-size: 2.5rem;"></i>
+                    <h6 class="mt-3">Need Help?</h6>
+                    <p class="text-muted small mb-3">Contact our support team for assistance.</p>
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-telephone me-1"></i>Call Support
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Booking Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Booking</button>
+                <form id="cancelForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle me-1"></i>Cancel Booking
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(CarRentalSystemSeparation.Common.Enums.BookingStatus status)
+    {
+        return status switch
+        {
+            CarRentalSystemSeparation.Common.Enums.BookingStatus.Pending => "warning",
+            CarRentalSystemSeparation.Common.Enums.BookingStatus.Confirmed => "success",
+            CarRentalSystemSeparation.Common.Enums.BookingStatus.Cancelled => "danger",
+            CarRentalSystemSeparation.Common.Enums.BookingStatus.Completed => "info",
+            _ => "secondary"
+        };
+    }
+}
+
+<script>
+    function cancelBooking(bookingId) {
+        const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+        const form = document.getElementById('cancelForm');
+        form.action = '@Url.Action("Cancel")/' + bookingId;
+        modal.show();
+    }
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

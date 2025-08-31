@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using CarRentalSystemSeparation.Areas.Admin.Models;
 using CarRentalSystemSeparation.Areas.Vehicle.Models;
+using CarRentalSystemSeparation.Areas.Customer.Models;
+using CarRentalSystemSeparation.Areas.Booking.Models;
+
 
 namespace CarRentalSystemSeparation.Common.Data
 {
@@ -13,6 +16,8 @@ namespace CarRentalSystemSeparation.Common.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Areas.Vehicle.Models.Vehicle> Vehicles { get; set; }
         public DbSet<Banner> Banners { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Rental> Rentals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +50,32 @@ namespace CarRentalSystemSeparation.Common.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Title).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.ImageUrl).IsRequired().HasMaxLength(500);
+            });
+
+            // Booking configuration
+            modelBuilder.Entity<Booking>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.TotalAmount).HasColumnType("decimal(10,2)");
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Vehicle)
+                    .WithMany()
+                    .HasForeignKey(e => e.VehicleId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Rental configuration
+            modelBuilder.Entity<Rental>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.ActualAmount).HasColumnType("decimal(10,2)");
+                entity.HasOne(e => e.Booking)
+                    .WithMany()
+                    .HasForeignKey(e => e.BookingId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Seed data
@@ -166,7 +197,5 @@ namespace CarRentalSystemSeparation.Common.Data
                 }
             );
         }
-
-       
     }
 }

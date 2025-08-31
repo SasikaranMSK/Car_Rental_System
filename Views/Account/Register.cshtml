@@ -13,7 +13,7 @@
                         <p class="text-muted">Create your account and start renting premium vehicles today</p>
                     </div>
 
-                    <form id="registerForm">
+                    <form asp-action="Register" method="post" id="registerForm">
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="firstName" class="form-label">First Name</label>
@@ -41,7 +41,7 @@
                                 <span class="input-group-text">
                                     <i class="bi bi-envelope"></i>
                                 </span>
-                                <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email">
+                                <input type="email" class="form-control" id="email" name="Email" required placeholder="Enter your email">
                             </div>
                         </div>
 
@@ -71,7 +71,7 @@
                                 <span class="input-group-text">
                                     <i class="bi bi-lock"></i>
                                 </span>
-                                <input type="password" class="form-control" id="password" name="password" required placeholder="Create a strong password" minlength="6">
+                                <input type="password" class="form-control" id="password" name="Password" required placeholder="Create a strong password" minlength="6>
                                 <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                     <i class="bi bi-eye"></i>
                                 </button>
@@ -85,7 +85,7 @@
                                 <span class="input-group-text">
                                     <i class="bi bi-lock-fill"></i>
                                 </span>
-                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password">
+                                <input type="password" class="form-control" id="confirmPassword" name="ConfirmPassword" required placeholder="Confirm your password">
                                 <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
                                     <i class="bi bi-eye"></i>
                                 </button>

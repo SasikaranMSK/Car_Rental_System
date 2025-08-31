@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Areas\Admin\Views\Dashboard.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Areas\Admin\Views\Dashboard.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -22,9 +30,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Controllers\" />
-    <Folder Include="Areas\Admin\Views\" />
+    <Folder Include="Areas\Booking\Repositories\" />
+    <Folder Include="Areas\Booking\Services\" />
+    <Folder Include="Areas\Customer\Models\" />
+    <Folder Include="Areas\Customer\DTOs\" />
+    <Folder Include="Areas\Customer\Controllers\" />
+    <Folder Include="Areas\Customer\Repositories\" />
+    <Folder Include="Areas\Customer\Services\" />
+    <Folder Include="Areas\Customer\ViewModels\" />
+    <Folder Include="Areas\Customer\Views\" />
+    <Folder Include="Areas\Booking\ViewModels\" />
+    <Folder Include="Areas\Booking\Views\" />
     <Folder Include="Areas\Vehicle\Controllers\" />
+    <Folder Include="Areas\Vehicle\ViewModels\" />
     <Folder Include="Areas\Vehicle\Views\" />
   </ItemGroup>
 

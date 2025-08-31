@@ -7,8 +7,8 @@
 <div class="container my-5">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
-            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Vehicles">Vehicles</a></li>
+            <li class="breadcrumb-item"><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-area="" asp-controller="Home" asp-action="Vehicles">Vehicles</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.DisplayName</li>
         </ol>
     </nav>
@@ -35,7 +35,7 @@
                             <small class="text-muted">per day</small>
                         </div>
                     </div>
-                    
+
                     <h5 class="mb-3">Description</h5>
                     <p class="text-muted mb-4">@Model.Description</p>
 
@@ -54,7 +54,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-4">
             <div class="card shadow-sm sticky-top">
                 <div class="card-header bg-primary text-white">
@@ -106,9 +106,9 @@
                                 <span class="h6 text-primary fw-bold" id="totalPrice">$@Model.PricePerDay</span>
                             </div>
                             <div class="d-grid">
-                                <button type="button" class="btn btn-primary btn-lg" onclick="alert('Please register or login to book a vehicle')">
+                                <a class="btn btn-primary btn-lg" asp-area="Customer" asp-controller="Booking" asp-action="Create" asp-route-vehicleId="@Model.Id">
                                     <i class="bi bi-calendar-check me-2"></i>Book Now
-                                </button>
+                                </a>
                             </div>
                             <div class="text-center mt-3">
                                 <small class="text-muted">
@@ -172,7 +172,7 @@
                 const returnD = new Date(returnDate.value);
                 const diffTime = Math.abs(returnD - pickup);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
+
                 if (diffDays > 0) {
                     estimatedDaysElement.textContent = diffDays;
                     const subtotal = dailyRate * diffDays;

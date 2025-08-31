@@ -15,5 +15,12 @@ namespace CarRentalSystemSeparation.Areas.Admin.Models
         public DateTime? UpdatedAt { get; set; }
 
         public string FullName => $"{FirstName} {LastName}";
+
+        internal bool VerifyPassword(string password)
+        {
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+            var hashedInput = Convert.ToBase64String(sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)));
+            return PasswordHash == hashedInput;
+        }
     }
 }

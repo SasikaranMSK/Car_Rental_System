@@ -13,6 +13,5 @@ namespace CarRentalSystemSeparation.Areas.Admin.DTOs
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string FullName { get; set; } = string.Empty;
-        public object PasswordHash { get; internal set; }
     }
 }

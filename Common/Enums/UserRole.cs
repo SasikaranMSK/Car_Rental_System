@@ -25,4 +25,20 @@ namespace CarRentalSystemSeparation.Common.Enums
         Truck = 4,
         Van = 5
     }
+    public enum BookingStatus
+    {
+        Pending = 0,
+        Confirmed = 1,
+        InProgress = 2,
+        Completed = 3,
+        Cancelled = 4
+    }
+
+    public enum RentalStatus
+    {
+        Active = 0,
+        Completed = 1,
+        Cancelled = 2
+    }
 }
+
