@@ -26,8 +26,9 @@ namespace CarRentalSystemSeparation.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login(string email, string password, bool rememberMe)
         {
+            
             var user = await _userRepository.GetByEmailAsync(email);
 
             if (user == null || !user.VerifyPassword(password))
@@ -38,11 +39,11 @@ namespace CarRentalSystemSeparation.Controllers
 
             // Create claims
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
-            };
+                {
+                    new Claim(ClaimTypes.Name, user.FullName),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role.ToString())
+                };
 
             // Create identity and sign in
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

@@ -13,7 +13,7 @@
                         <p class="text-muted">Sign in to your CarRental Pro account</p>
                     </div>
 
-                    <form id="loginForm">
+                    <form id="loginForm" asp-controller="Account" asp-action="Login" method="post">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
                             <div class="input-group">
@@ -107,12 +107,32 @@
                 toggleIcon.classList.remove('bi-eye-slash');
                 toggleIcon.classList.add('bi-eye');
             }
+
+       
         });
 
-        const loginForm = document.getElementById('loginForm');
+        
+
+
+        /*const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             alert('Login functionality not implemented in this demo. This would integrate with authentication system.');
-        });
+        });*/
     });
 </script>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+    </div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
